@@ -1,10 +1,11 @@
 package work
 
 import (
-	"github.com/gomodule/redigo/redis"
-	"github.com/robfig/cron"
 	"sort"
 	"sync"
+
+	"github.com/gomodule/redigo/redis"
+	"github.com/robfig/cron"
 )
 
 // WorkerPool represents a pool of workers. It forms the primary API of gocraft/work. WorkerPools provide the public API of gocraft/work. You can attach jobs and middlware to them. You can start and stop them. Based on their concurrency setting, they'll spin up N worker goroutines.
@@ -121,7 +122,9 @@ func (wp *WorkerPool) JobWithOptions(name string, jobOpts JobOptions, handler Ha
 // Note that the first value is the seconds!
 // If you have multiple worker pools on different machines, they'll all coordinate and only enqueue your job once.
 func (wp *WorkerPool) PeriodicallyEnqueue(spec string, jobName string) *WorkerPool {
-	schedule, err := cron.Parse(spec)
+	// schedule, err := cron.Parse(spec)
+	scheduleParser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
+	schedule, err := scheduleParser.Parse(spec)
 	if err != nil {
 		panic(err)
 	}
